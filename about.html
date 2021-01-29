@@ -1,0 +1,30 @@
+<h1>About</h1>
+<p>
+The ranking pipeline is as follows: </br> 
+(1) Retrieve first round of results using Solr. </br>
+(2) Re-rank top 500 documents and using BERT-base.
+</br></br>
+
+<h2>Solr Config</h2>
+<p>
+The Solr is configured in the following manner: </br>
+(1) Solr is running on 2 nodes, each of which hosts an index on an SSD with no replication.  Solr is configured to use distributed idf so that the idf is calculated with both indexes. </br>
+(2) Zookeeper is used to coordinate the Solr instances. </br>
+For index creation and first round of ranking, the following is done:
+(1) Stop-word removal and stemming used is KStem.</br>
+(2) BM25 Ranking is used for the first round of retrieval (k1 = 1.2, b = 0.75). </br>
+</p>
+
+</br></br>
+<h2> BERT Config </h2>
+<p>
+The reranker utilises a fine-tuned BERT-base (provided by Huggingface in PyTorch). </br>
+Fine-tuning of BERT-base is done using the passage ranking corpus of MS-MARCO. </br>
+The tokenization of queries and passages is done using BertTokenizer provided by the transformer module (of Huggingface). </br>
+The entire model is fine-tuned on 12.8M query-passage pairs (following Nogueira et. al, 2020).</br>
+A batch size of 32 is used (gradients are accumulated over 4 time-steps due to GPU memory limitations). </br>
+The passage length is truncated to 256 tokens. </br>
+</p>
+
+</br></br>
+<p> Created May 2020 by <a href="https://vaibhav4595.github.io">Vaibhav Kumar</a> and <a href="http://www.cs.cmu.edu/~cmw2/">Cameron VandenBerg</a> </p>
