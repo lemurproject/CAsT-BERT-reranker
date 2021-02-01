@@ -101,6 +101,9 @@ port=[ZK_PORT]
 We have provided a Flask web application for running queries on Solr and reranking with BERT.
 + Install packages needed by search_gpu.py
 + Download model: http://boston.lti.cs.cmu.edu/BERTFiles/bert_model.1600000.pkl
-+ Update search_gpu.py to point to correct model location, solr host, and car and marco collection names (separated by commas)
++ Update these lines search_gpu.py to point to correct model location, solr host, and car and marco collection names
+  + model = torch.load('[MODEL_DIRECTORY]/bert_model.1600000.pkl')
+  + collection = "[CAR_COLLECTION_NAME],[MARCO_COLLECTION_NAME]"
+  + url = '[http://[SOLR_HOST]/solr/' + collection + '/query?'
 + Run on single gpu with at least 64G or RAM
 + Open CAsT search site on your GPU Host
