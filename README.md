@@ -9,26 +9,26 @@ This project contains the python code to perform BERT reranking on a Solr index.
 
 ### Zookeeper
 + Download apache zookeeper
-+ Unzip zookeeper where it will run
++ Unzip zookeeper on server where it will run
 + Create zoo.cfg 
   + Copy zoo_sample.cfg to zoo.cfg
   + Update:
-    + dataDir=/bos/tmp0/cmw2/zookeeper
+    + dataDir=[DIRECTOY_ON_SERVER]
     + clientPort=2181
     + 4lw.commands.whitelist=*
 + Run zookeeper: bin/zkServer.sh --config conf start-foreground
 
 ### Solr
-+ Download the latest version of Solr
++ Download Solr 8.7
 + Copy Solr to the server in a location where there is enough space for the CAsT index
 + Unzip Solr
 + Create a Solr Configuration
-  + Copy _default configuration to [CONFIG_NAME]
+  + + cd [SOLR_DIRECTORY]
+  + Copy server/solr/configsets/_default configuration to server/solr/configsets/[CONFIG_NAME]
   + Makes this change to server/solr/configsets/CONFIG_NAME/solrconfig.xml
     + \<statsCache class="org.apache.solr.search.stats.ExactStatsCache" /\>
   + Upload configuration: bin/solr zk upconfig -n [CONFIG_NAME] -z [ZK_HOST]:[ZK_PORT] -d server/solr/configsets/CONFIG_NAME/conf/
 + Run Solr
-  + cd [SOLR_DIRECTORY]
   + bin/solr -c -f -p 23232 -z [ZK_HOST]:[ZK_PORT] -Denable.runtime.lib=true
 + Test solr is running by checking solr dashboard: [SOLR_HOST]/solr/#/
 + Create a collection for CAR: http://[SOLR_HOST]/solr/admin/collections?action=CREATE&name=[CAR_COLLECTION_NAME]&numShards=1&replicationFactor=1&collection.configName=[CONFIG_NAME]&createNodeSet=[SOLR_HOST]:[SOLR_PORT]_solr
@@ -66,7 +66,7 @@ ignoreCase=true
 host=[ZK_HOST]
 port=[ZK_PORT]
 ```
-+ Index CAR: java -jar -Xmx16G LucindriIndexer-1.2-jar-with-dependencies.jar [CAR_PROPERTIES_FILENAME]
++ Index CAR: java -jar -Xmx16G LucindriIndexer-1.2-jar-with-dependencies.jar [CAR_PROPERTIES_FILENAME] (This will take several hours)
 + Create indexing properties for MARCO
 ```
 #implementation options
@@ -94,7 +94,7 @@ ignoreCase=true
 host=[ZK_HOST]
 port=[ZK_PORT]
 ```
-+ Index MARCO: java -jar -Xmx16G LucindriIndexer-1.2-jar-with-dependencies.jar [MARCO_PROPERTIES_FILENAME]
++ Index MARCO: java -jar -Xmx16G LucindriIndexer-1.2-jar-with-dependencies.jar [MARCO_PROPERTIES_FILENAME] (This will take up to an hour)
 
 ## Running BERT
 We have provided a Flask web application for running queries on Solr and reranking with BERT.
