@@ -1,6 +1,7 @@
 # CAsT-BERT-reranker
 
 This project contains the python code to perform BERT reranking on a Solr index.  The components you will need to run this project are:
++ Zookeeper
 + Solr
 + Lucindri (requires java)
 + Python 3.7+ 
