@@ -9,6 +9,7 @@ This project contains the python code to perform BERT reranking on a Solr index.
 ## Setting Up Solr
 
 ### Zookeeper
+Zookeeper is used to keep track of one or more Solr instances.  In our system, we have indexes split over multiple Solr instances to decrease retrieval time.  Zookeeper is a central place to keep track of all (or even just one) of the instances and their configuration(s).
 + Download apache zookeeper
 + Unzip zookeeper on server where it will run
 + Create zoo.cfg 
@@ -20,17 +21,18 @@ This project contains the python code to perform BERT reranking on a Solr index.
 + Run zookeeper: bin/zkServer.sh --config conf start-foreground
 
 ### Solr
+We use Solr to get our base BM25 ranking.  Solr provides support for distributed indexes (although it also works on a single server) and exposed a web interface that is easy to use from any application.  We use a python script to run the BERT reranking, so having the index(es) in Solr allows us to easily access the data from python.  We have documented how we set up Solr on our server below, but there is additional Solr documentation here: https://lucene.apache.org/solr/guide/8_7/index.html. 
 + Download Solr 8.7
 + Copy Solr to the server in a location where there is enough space for the CAsT index
 + Unzip Solr
 + Create a Solr Configuration
-  + + cd [SOLR_DIRECTORY]
+  + cd [SOLR_DIRECTORY]
   + Copy server/solr/configsets/_default configuration to server/solr/configsets/[CONFIG_NAME]
   + Makes this change to server/solr/configsets/CONFIG_NAME/solrconfig.xml
     + \<statsCache class="org.apache.solr.search.stats.ExactStatsCache" /\>
   + Upload configuration: bin/solr zk upconfig -n [CONFIG_NAME] -z [ZK_HOST]:[ZK_PORT] -d server/solr/configsets/CONFIG_NAME/conf/
 + Run Solr
-  + bin/solr -c -f -p 23232 -z [ZK_HOST]:[ZK_PORT] -Denable.runtime.lib=true
+  + bin/solr -c -f -p [SOLR_PORT] -z [ZK_HOST]:[ZK_PORT] -Denable.runtime.lib=true
 + Test solr is running by checking solr dashboard: [SOLR_HOST]/solr/#/
 + Create a collection for CAR: http://[SOLR_HOST]/solr/admin/collections?action=CREATE&name=[CAR_COLLECTION_NAME]&numShards=1&replicationFactor=1&collection.configName=[CONFIG_NAME]&createNodeSet=[SOLR_HOST]:[SOLR_PORT]_solr
 + Create a collection for MARCO: http://[SOLR_HOST]/solr/admin/collections?action=CREATE&name=[MARCO_COLLECTION_NAME]&numShards=1&replicationFactor=1&collection.configName=[CONFIG_NAME]&createNodeSet=[SOLR_HOST]:[SOLR_PORT]_solr
@@ -38,7 +40,9 @@ This project contains the python code to perform BERT reranking on a Solr index.
 ## Indexing
 + Download Lucindri Indexer either from github or sourceforge
   + Sourceforge (executable jar file): https://sourceforge.net/projects/lemur/files/lemur/lucindri-1.2/
+    + LucindriIndexer-1.2-jar-with-dependencies.jar can be used directly to index CAR and MARCO data
   + Github (source code): https://github.com/lemurproject/Lucindri
+    + Follow the instructions for building Lucindri on the Lucindri github page
 + Download CAR and MARCO data
 + Create indexing properties for CAR
 ```
@@ -98,7 +102,7 @@ port=[ZK_PORT]
 + Index MARCO: java -jar -Xmx16G LucindriIndexer-1.2-jar-with-dependencies.jar [MARCO_PROPERTIES_FILENAME] (This will take up to an hour)
 
 ## Running BERT
-We have provided a Flask web application for running queries on Solr and reranking with BERT.
+We have provided a python Flask web application for running queries on Solr and reranking with BERT.
 + Install packages needed by search_gpu.py
 + Download model: http://boston.lti.cs.cmu.edu/BERTFiles/bert_model.1600000.pkl
 + Update these lines search_gpu.py to point to correct model location, solr host, and car and marco collection names
