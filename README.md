@@ -38,6 +38,7 @@ We use Solr to get our base BM25 ranking.  Solr provides support for distributed
 + Create a collection for MARCO: http://[SOLR_HOST]/solr/admin/collections?action=CREATE&name=[MARCO_COLLECTION_NAME]&numShards=1&replicationFactor=1&collection.configName=[CONFIG_NAME]&createNodeSet=[SOLR_HOST]:[SOLR_PORT]_solr
 
 ## Indexing
+We use Lucindri to create the Solr indexes for CAR and MARCO.  The LucindriIndexer can be used by either downloading the executable jar or building from the source.
 + Download Lucindri Indexer either from github or sourceforge
   + Sourceforge (executable jar file): https://sourceforge.net/projects/lemur/files/lemur/lucindri-1.2/
     + LucindriIndexer-1.2-jar-with-dependencies.jar can be used directly to index CAR and MARCO data
