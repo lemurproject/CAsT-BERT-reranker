@@ -103,7 +103,7 @@ def search():
     current_query = json.loads(q)["q"]
     query = make_query(q)  # Do not remove
     # Can edit following code
-    collection = "{COOLECTION_NAME_1,COLLECTIOM_NAME_@"
+    collection = "[COLLECTION_NAME_1,COLLECTIOM_NAME_2]"
     url        = '[SOLR_URL]' + '/solr/' + collection + '/query?'
     q          = "q=" + query
     fl         = "fl=id,score,fulltext"
